@@ -1,16 +1,8 @@
 <?php
 
-session_start();
+require 'koneksi/koneksi.php';
 
-if (!isset($_SESSION["login"])) {
-    header("Location: login.php");
-    exit;
-}
-
-require 'koneksi.php';
-
-
-$kartu = query("SELECT * FROM sensor");
+$db = query("SELECT * FROM tbl_dht11");
 
 ?>
 
@@ -18,7 +10,7 @@ $kartu = query("SELECT * FROM sensor");
 <html>
 
 <head>
-    <meta http-equiv="refresh" content="1">
+    <meta http-equiv="refresh" content="10">
     <title>Home</title>
 </head>
 
@@ -73,10 +65,8 @@ $kartu = query("SELECT * FROM sensor");
         }
     </style>
 
-    <a href="logout.php" class="clogout">Logout</a>
-
     <center>
-        <h1 class="title">Data Sensor Arus dan Tegangan</h1>
+        <h1 class="title">Data Sensor</h1>
     </center>
 
     <table id="tbsensor">
@@ -84,25 +74,21 @@ $kartu = query("SELECT * FROM sensor");
         <tr>
             <th>No</th>
             <th>Waktu</th>
-            <th>Tegangan</th>
-            <th>Arus</th>
-            <th>Suhu</th>
-            <th>Kelembaban</th>
+            <th>Temperature</th>
+            <th>Humidity</th>
             <th>Aksi</th>
         </tr>
 
         <?php $i = 1; ?>
-        <?php foreach ($kartu as $data) : {
+        <?php foreach ($db as $data) : {
             }  ?>
             <tr>
                 <td><?= $i; ?></td>
-                <td><?= $data["waktu"]; ?></td>
-                <td><?= $data["tegangan"]; ?></td>
-                <td><?= $data["arus"]; ?></td>
-                <td><?= $data["suhu"]; ?></td>
-                <td><?= $data["kelembaban"]; ?></td>
+                <td><?= $data["timestamp"]; ?></td>
+                <td><?= $data["data_temperature"]; ?></td>
+                <td><?= $data["data_humidity"]; ?></td>
                 <td>
-                    <a href="hapus.php?id=<?= $data["id"]; ?>">Hapus</a>
+                    <a href="crud/hapus.php?id=<?= $data["id"]; ?>">Hapus</a>
                 </td>
             </tr>
 

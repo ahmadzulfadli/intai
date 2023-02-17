@@ -1,7 +1,7 @@
 <?php
 
 //include library utama
-include_once 'konek.php';
+include_once '../koneksi/konek.php';
 
 // Buat Instance baru
 $app = new Intai();

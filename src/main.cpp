@@ -78,4 +78,5 @@ void loop()
         String line = client.readStringUntil('\r');
         Serial.println(line);
     }
+    delay(30000);
 }
