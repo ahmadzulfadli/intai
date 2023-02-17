@@ -1,90 +1,81 @@
+#include <Arduino.h>
 #include <WiFi.h>
-#include <HTTPClient.h>
 
-const char *ssid = "Raden Mas Wifi"; // Nama Wifi
-const char *password = "bebaspakai"; // pass wifi
+// Network ID
+const char *ssid = "Raden Mas Wifi";
+const char *password = "bebaspakai";
+const char *host = "172.16.140.226";
+const int port = 80;
 
-float h, t;
-
-void read_dht()
-{
-    h = random(50, 100);
-    t = random(50, 100);
-
-    // Check if any reads failed and exit early (to try again).
-    if (isnan(h) || isnan(t))
-    {
-        Serial.println(F("Failed to read from DHT sensor!"));
-        return;
-    }
-    Serial.print(F("Humidity: "));
-    Serial.print(h);
-    Serial.print(F("%  Temperature: "));
-    Serial.print(t);
-    Serial.println(F("°C "));
-}
-
-void kirim_data()
-{
-
-    float tegangan, arus, suhu, kelembaban;
-    tegangan = random(0, 12); // ubah dengan data dari sensor
-    arus = random(0, 3);      // ubah dengan data dari sensor
-    suhu = t;
-    kelembaban = h;
-
-    String postData = (String) "tegangan=" + tegangan + "&arus=" + arus + "&suhu=" + suhu + "&kelembaban=" + kelembaban;
-
-    HTTPClient http;
-    http.begin("http://127.0.0.1:80/");
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    auto httpCode = http.POST(postData);
-    String payload = http.getString();
-
-    Serial.println(postData);
-    Serial.println(payload);
-
-    http.end();
-}
+// Current time
+unsigned long currentTime = millis();
+// Previous time
+unsigned long previousTime = 0;
+// Define timeout time in milliseconds (example: 2000ms = 2s)
+const long timeoutTime = 2000;
 
 void setup()
 {
-    delay(1000);
+    // NodeMCU Utility
     Serial.begin(9600);
-    WiFi.mode(WIFI_OFF);
-    delay(1000);
-    WiFi.mode(WIFI_STA);
 
+    // Networking
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
     WiFi.begin(ssid, password);
-    Serial.println("");
-
-    Serial.print("Connecting");
-    // Wait for connection
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
         Serial.print(".");
     }
-
     Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(ssid);
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP()); // IP address assigned to your ESP
+    Serial.println("WiFi connected.");
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
 }
 
 void loop()
 {
+    WiFiClient client;
 
-    if (Serial.available())
+    if (!client.connect(host, port))
     {
-        int a = Serial.parseInt();
+        Serial.println("Connection failed");
+        return;
+    }
 
-        if (a > 0)
+    // DHT get temp dan humid
+    float temp = random(50, 100);
+    float humid = random(50, 100);
+
+    // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
+    String apiUrl = "http://monitoringdht11.com/kirim_data.php?";
+    apiUrl += "mode=save";
+    apiUrl += "&temperature=" + String(temp);
+    apiUrl += "&humidity=" + String(humid);
+
+    // Set header Request
+    client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
+                 "Host: " + host + "\r\n" +
+                 "Connection: close\r\n\r\n");
+
+    // Pastikan tidak berlarut-larut
+    unsigned long timeout = millis();
+    while (client.available() == 0)
+    {
+        if (millis() - timeout > 3000)
         {
-            read_dht();
-            kirim_data();
+            Serial.println(">>> Client Timeout !");
+            Serial.println(">>> Operation failed !");
+            client.stop();
+            return;
         }
+    }
+
+    // Baca hasil balasan dari PHP
+    while (client.available())
+    {
+        String line = client.readStringUntil('\r');
+        Serial.println(line);
     }
 }
