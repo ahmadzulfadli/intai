@@ -1,8 +1,10 @@
 <?php
-require '../koneksi/koneksi.php';
+require '../koneksi/konek.php';
 $no = $_GET["id"];
 
-if (hapus($no) > 0) {
+$app = new Intai;
+
+if ($app->delete_data($no) > 0) {
 	echo "
 	<script>
 		alert('Kartu Berhasil di Hapus');

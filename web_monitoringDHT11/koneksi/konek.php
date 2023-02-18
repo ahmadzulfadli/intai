@@ -32,10 +32,27 @@ class Intai
      * This section for CRUD Operation
      * Create - Read - Update - Delete
      */
-    function read_data()
+    function read_json()
     {
         $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
         echo $this->execute_query($sql_query, [], true);
+    }
+
+    function read_data()
+    {
+        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $result = $this->connection->query($sql_query);
+
+        if ($result->num_rows > 0) {
+            $data = array();
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            return $data;
+        } else {
+            return false;
+        }
     }
 
     function create_data($temp, $humid)

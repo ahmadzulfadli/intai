@@ -16,7 +16,7 @@ if ($app->is_url_query('mode')) {
     switch ($app->get_url_query_value('mode')) {
 
         default:
-            $app->read_data();
+            $app->read_json();
 
         case 'save':
             if ($app->is_url_query('temperature') && $app->is_url_query('humidity')) {
@@ -68,5 +68,5 @@ if ($app->is_url_query('mode')) {
             break;
     }
 } else {
-    $app->read_data();
+    $app->read_json();
 }

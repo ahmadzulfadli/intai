@@ -1,102 +1,247 @@
 <?php
-
-require 'koneksi/koneksi.php';
-
-$db = query("SELECT * FROM tbl_dht11");
-
+require 'koneksi/konek.php';
+$app = new Intai;
+$data = $app->read_data();
+$last_data = null;
+if ($data) {
+    $last_data = $data[0];
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta http-equiv="refresh" content="10">
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTAI</title>
+    <link rel="shortcut icon" href="assets/image/logo1.svg">
+    <!-- halfmoon css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/halfmoon/css/halfmoon.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- halfmoon js -->
+    <script src="https://cdn.jsdelivr.net/npm/halfmoon/js/halfmoon.min.js"></script>
 </head>
 
-<body>
+<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
+    <!-- page wrapper with sidebar -->
+    <div id="page-wrapper" class="page-wrapper with-navbar with-sidebar with-transitions" data-sidebar-type="overlayed-sm-and-down">
+        <!-- Navbar (immediate child of the page wrapper) -->
+        <nav class="navbar">
+            <!-- Navbar content (with toggle sidebar button) -->
 
-    <style>
-        .clogout {
-            float: right;
-            background-color: #1c87c9;
-            border: none;
-            color: white;
-            padding: 15px 28px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 3px 2px;
-            cursor: pointer;
-        }
+            <button class="btn btn-action " onclick="halfmoon.toggleSidebar()" type="button" style="background-color: #5e81ac;"></button>
 
-        .title {
-            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-        }
+            <!-- Navbar brand -->
+            <a href="#" class="navbar-brand ">
+                INTAI
+            </a>
+            <!-- Navbar text -->
+            <span class="navbar-text text-monospace">Teknik Elektro USR</span>
+        </nav>
+        <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
+        <!-- sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-menu">
+                <center>
+                    <img src="assets/image/logo.svg" width="100px" height="100px" style="border-radius: 40%; margin-top: 10px;">
+                    <h4>INTAI</h4>
+                </center>
+                <!-- Dashboard table and graph -->
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="tabel.php">Tabel</a></li>
+                    <li><a href="grafik.php">Grafik</a></li>
+                </ul><br>
+            </div>
+        </div>
+        <!-- end of sidebar -->
+        <!-- content wrapper -->
+        <div class="content-wrapper">
+            <!-- content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <!-- First comes a content container with the main title -->
+                    <!-- Third row (equally spaced on large screens and up) -->
+                    <div class="row row-eq-spacing-lg">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="text-center">
+                                    <h2 class="font-weight-bold mt-1">Keterangan :</h2>
+                                </div>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nama Device</th>
+                                            <th scope="col">Koordinat</th>
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Elang</td>
+                                            <td>0°28'35"N 101°20'57"E.</td>
+                                            <td>Aman</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <h2 class="content-title">Data Sensor Sekarang</h2>
+                    </div>
+                    <!-- First row (equally spaced) -->
+                    <div class="row row-eq-spacing">
+                        <div class="col-6 col-xl-4 data">
+                            <div class="card">
+                                <h2 class="card-title">Temperature</h2>
+                                <div id="jg1" class="gauge size-2"></div>
+                                <div class="h-split"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-4 data">
+                            <div class="card">
+                                <h2 class="card-title">Humidity</h2>
+                                <div id="jg2" class="gauge size-2"></div>
+                                <div class="h-split"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-4 data">
+                            <div class="card">
+                                <h2 class="card-title">Kebisingan</h2>
+                                <div id="jg3" class="gauge size-2"></div>
+                                <div class="h-split"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Third row (equally spaced on large screens and up) -->
+                <!-- Second row (equally spaced on large screens and up) -->
+                <div class="row row-eq-spacing-lg">
+                    <div class="col-lg-8">
+                        <div class="card h-lg-250 overflow-y-lg-auto">
+                            <!-- h-lg-250 = height = 25rem (250px) only on large screens and up (> 992px), overflow-y-lg-auto = overflow-y: auto only on large screens and up (> 992px) -->
+                            <h2 class="card-title">Keterangan Data</h2>
+                            <br>
+                            <table class="table table-striped table-hover">
+                                <tr>
+                                    <td>Banyaknya Data</td>
+                                    <td>:</td>
+                                    <td><?php echo $num_results; ?> </td>
+                                </tr>
+                                <tr>
+                                    <td>Terakhir Diupdate</td>
+                                    <td>:</td>
+                                    <td><?php echo $last_update; ?> </td>
+                                </tr>
 
-        #tbsensor {
-            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            margin-left: 10%;
-            width: 80%;
-        }
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-lg-250 overflow-y-lg-auto">
+                            <!-- h-lg-250 = height = 25rem (250px) only on large screens and up (> 992px), overflow-y-lg-auto = overflow-y: auto only on large screens and up (> 992px) -->
+                            <h2 class="card-title">Restech</h2>
+                            ...
+                        </div>
+                    </div>
+                </div>
+                <!-- Third row (equally spaced on large screens and up) -->
+                <div class="row row-eq-spacing-lg">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <h2 class="card-title">Teknik Elektro UIN SUSKA Riau</h2>
+                            ...
+                        </div>
+                        <div class="content">
+                            ...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of content -->
+    </div>
+    <!-- end of page wrapper with sidebar -->
+    <script src="assets/js/raphael-2.1.4.min.js"></script>
+    <script src="assets/js/justgage.js"></script>
 
-        #tbsensor td,
-        #tbsensor th {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var jg1, jg2, jg3
 
-        #tbsensor tr:nth-child(even) {
-            background-color: #f2f2E2;
-        }
+            var defs1 = {
+                label: "°C",
+                value: <?php echo $last_data['data_temperature']; ?>,
+                min: 0,
+                max: 100,
+                decimals: 2,
+                gaugeWidthScale: 0.6,
+                pointer: true,
+                pointerOptions: {
+                    toplength: 10,
+                    bottomlength: 10,
+                    bottomwidth: 2
+                },
+                counter: true,
+                relativeGaugeSize: true,
+            }
 
-        #tbsensor tr:hover {
-            background-color: #eee;
-        }
+            var defs2 = {
+                label: "RH",
+                value: <?php echo $last_data['data_humidity']; ?>,
+                min: 0,
+                max: 100,
+                decimals: 2,
+                gaugeWidthScale: 0.6,
+                pointer: true,
+                pointerOptions: {
+                    toplength: 10,
+                    bottomlength: 10,
+                    bottomwidth: 2
+                },
+                counter: true,
+                relativeGaugeSize: true,
+            }
 
-        #tbsensor th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            text-align: left;
-            background-color: #1a75ff;
-            color: white;
-        }
-    </style>
+            var defs3 = {
+                label: "dB",
+                value: <?php echo $last_data['data_humidity']; ?>,
+                min: 0,
+                max: 100,
+                decimals: 2,
+                gaugeWidthScale: 0.6,
+                pointer: true,
+                pointerOptions: {
+                    toplength: 10,
+                    bottomlength: 10,
+                    bottomwidth: 2
+                },
+                counter: true,
+                relativeGaugeSize: true,
+            }
 
-    <center>
-        <h1 class="title">Data Sensor</h1>
-    </center>
+            jg1 = new JustGage({
+                id: "jg1",
+                defaults: defs1
+            });
 
-    <table id="tbsensor">
+            jg2 = new JustGage({
+                id: "jg2",
+                defaults: defs2
+            });
 
-        <tr>
-            <th>No</th>
-            <th>Waktu</th>
-            <th>Temperature</th>
-            <th>Humidity</th>
-            <th>Aksi</th>
-        </tr>
-
-        <?php $i = 1; ?>
-        <?php foreach ($db as $data) : {
-            }  ?>
-            <tr>
-                <td><?= $i; ?></td>
-                <td><?= $data["timestamp"]; ?></td>
-                <td><?= $data["data_temperature"]; ?></td>
-                <td><?= $data["data_humidity"]; ?></td>
-                <td>
-                    <a href="crud/hapus.php?id=<?= $data["id"]; ?>">Hapus</a>
-                </td>
-            </tr>
-
-            <?php $i++;  ?>
-        <?php endforeach; ?>
-
-    </table>
-
+            jg3 = new JustGage({
+                id: "jg3",
+                defaults: defs3
+            });
+        });
+    </script>
 </body>
 
 </html>
