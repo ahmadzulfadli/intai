@@ -75,7 +75,6 @@ $data = $app->garfik_data();
 	</div>
 	<!-- end of page wrapper with sidebar -->
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-	<!-- <script src="assets/js/grafik.js"></script> -->
 	<script>
 		var options = {
 			chart: {

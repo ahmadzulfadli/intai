@@ -1,12 +1,71 @@
 <?php
 require 'koneksi/konek.php';
-$app = new Intai;
-$data = $app->read_data();
-$num_results = $app->count_data();
-$last_data = null;
-if ($data) {
-	$last_data = $data[0];
+
+class Content
+{
+	private $app;
+
+	function __construct()
+	{
+		$this->app = new Intai;
+	}
+
+	public function render_table()
+	{
+		$search = isset($_GET['search']) ? $_GET['search'] : '';
+		$data = $this->app->read_data($search);
+
+		if ($data) {
+			$num_results = $this->app->count_data();
+			$last_data = $data[0];
+
+			echo '<div class="table-responsive">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>Waktu</th>
+							<th>Temperature</th>
+							<th>Humidity</th>
+							<th>Kebisingan</th>
+						</tr>
+					</thead>
+					<tbody>';
+
+			$i = 1;
+			foreach ($data as $row) {
+				echo '<tr>
+					<td>' . $i . '</td>
+					<td>' . $row['timestamp'] . '</td>
+					<td>' . $row['data_temperature'] . '</td>
+					<td>' . $row['data_humidity'] . '</td>
+					<td>' . $row['data_humidity'] . '</td>
+				</tr>';
+
+				$i++;
+			}
+
+			echo '</tbody></table></div>';
+		} else {
+			echo '<p>Tidak ada data yang ditemukan.</p>';
+		}
+	}
+
+	public function render_search_form()
+	{
+		$search = isset($_GET['search']) ? $_GET['search'] : '';
+
+		echo '<form method="get" class="form-inline mb-3">
+			<div class="form-group mr-2">
+				<label for="search">Cari Data:</label>
+				<input type="text" class="form-control ml-2 mr-2" id="search" name="search" value="' . $search . '">
+			</div>
+			<button type="submit" class="btn btn-primary">Cari</button>
+		</form>';
+	}
 }
+
+$content = new Content;
 ?>
 
 <!DOCTYPE html>
@@ -63,19 +122,27 @@ if ($data) {
 		<!-- end of sidebar -->
 		<!-- content wrapper -->
 		<div class="content-wrapper">
-
 			<!-- content -->
 			<div class="content">
 				<div class="col-lg-12">
-					<div class="card" style="height: 700px;" align="center">
-						<h3> GRAFIK DAYA PLTS TEKNIK ELEKTRO<br>UIN SUSKA RIAU </h3>
-
+					<div class="card">
+						<div class="card-body">
+							<center>
+								<h5 class="card-title">Data Suhu dan Kelembaban</h5>
+							</center>
+							<form class="form-inline float-right" method="get" action="">
+								<?php $content->render_search_form() ?>
+							</form>
+							<table class="table table-striped">
+								<?php $content->render_table(); ?>
+							</table>
+						</div>
 					</div>
 				</div>
-				<!-- end of content -->
 			</div>
-			<!-- end of content wrapper -->
+			<!-- end of content -->
 		</div>
+		<!-- end of content wrapper -->
 	</div>
 	<script src="https://cdn.jsdelivr.net/npm/halfmoon/js/halfmoon.min.js"></script>
 </body>
