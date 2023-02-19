@@ -19,14 +19,16 @@ if ($app->is_url_query('mode')) {
             $app->read_json();
 
         case 'save':
-            if ($app->is_url_query('temperature') && $app->is_url_query('humidity')) {
+            if ($app->is_url_query('temperature') && $app->is_url_query('humidity') && $app->is_url_query('kebisingan')) {
                 $temp = $app->get_url_query_value('temperature');
                 $humid = $app->get_url_query_value('humidity');
-                $app->create_data($temp, $humid);
+                $suara = $app->get_url_query_value('kebisingan');
+                $app->create_data($temp, $humid, $suara);
             } else {
                 $error = [
                     'temperature' => 'required',
                     'humidity' => 'required',
+                    'kebisingan' => 'required',
                 ];
                 echo $app->error_handler($error);
             }
@@ -57,11 +59,17 @@ if ($app->is_url_query('mode')) {
                     $humid = $app->get_url_query_value('humidity');
                     $app->update_data($id, $humid);
                 }
+
+                if ($app->is_url_query('kebisingan')) {
+                    $suara = $app->get_url_query_value('kebisingan');
+                    $app->update_data($id, $suara);
+                }
             } else {
                 $error = [
                     'id' => 'required',
                     'temperature' => 'OR required',
                     'humidity' => 'OR required',
+                    'kebisingan' => 'OR required',
                 ];
                 echo $app->error_handler($error);
             }
