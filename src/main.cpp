@@ -2,9 +2,9 @@
 #include <WiFi.h>
 
 // Network ID
-const char *ssid = "Raden Mas Wifi";
-const char *password = "bebaspakai";
-const char *host = "172.16.140.226";
+const char *ssid = "MyASUS";
+const char *password = "hy12345678";
+const char *host = "192.168.108.240";
 const int port = 80;
 
 // Current time
@@ -47,12 +47,14 @@ void loop()
     // DHT get temp dan humid
     float temp = random(50, 100);
     float humid = random(50, 100);
+    float sound = random(50, 100);
 
     // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
     String apiUrl = "http://monitoringdht11.com/kirim_data.php?";
     apiUrl += "mode=save";
     apiUrl += "&temperature=" + String(temp);
     apiUrl += "&humidity=" + String(humid);
+    apiUrl += "&kebisingan=" + String(sound);
 
     // Set header Request
     client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
