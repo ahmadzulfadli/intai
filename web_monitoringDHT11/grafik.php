@@ -1,16 +1,7 @@
 <?php
-include("koneksi.php");
-
-$sql_id = mysqli_query($conn, "SELECT MAX(id_log) FROM tbl_log ");
-$data_id = mysqli_fetch_array($sql_id);
-$id_akhir = $data_id['MAX(id_log)'];
-$id_awal = $id_akhir - 5;
-
-$tegangan_p = mysqli_query($conn, "SELECT tegangan_p FROM tbl_log WHERE id_log>='$id_awal' and id_log<='$id_akhir' ORDER BY id_log ASC");
-$arus_p = mysqli_query($conn, "SELECT arus_p FROM tbl_log WHERE id_log>='$id_awal' and id_log<='$id_akhir' ORDER BY id_log ASC");
-$daya_p = mysqli_query($conn, "SELECT daya_p FROM tbl_log WHERE id_log>='$id_awal' and id_log<='$id_akhir' ORDER BY id_log ASC");
-$tanggal = mysqli_query($conn, "SELECT tanggal FROM tbl_log WHERE id_log>='$id_awal' and id_log<='$id_akhir' ORDER BY id_log ASC");
-
+require 'koneksi/konek.php';
+$app = new Intai;
+$data = $app->garfik_data();
 ?>
 
 <!DOCTYPE html>
@@ -20,13 +11,16 @@ $tanggal = mysqli_query($conn, "SELECT tanggal FROM tbl_log WHERE id_log>='$id_a
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Monitoring PLTS UIN SUSKA</title>
+	<title>INTAI</title>
 	<link rel="shortcut icon" href="assets/image/logo1.svg">
 	<!-- halfmoon css -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/halfmoon/css/halfmoon.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/style.css">
 
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- halfmoon js -->
+	<script src="https://cdn.jsdelivr.net/npm/halfmoon/js/halfmoon.min.js"></script>
 </head>
 
 <body class="with-custom-webkit-scrollbars with-custom-css-scrollbars">
@@ -40,7 +34,7 @@ $tanggal = mysqli_query($conn, "SELECT tanggal FROM tbl_log WHERE id_log>='$id_a
 
 			<!-- Navbar brand -->
 			<a href="#" class="navbar-brand ">
-				Monitoring PLTS
+				INTAI
 			</a>
 			<!-- Navbar text -->
 			<span class="navbar-text text-monospace">Teknik Elektro USR</span>
@@ -51,13 +45,13 @@ $tanggal = mysqli_query($conn, "SELECT tanggal FROM tbl_log WHERE id_log>='$id_a
 			<div class="sidebar-menu">
 				<center>
 					<img src="assets/image/logo.svg" width="100px" height="100px" style="border-radius: 40%; margin-top: 10px;">
-					<h4>Mahasiswa</h4>
+					<h4>INTAI</h4>
 				</center>
 				<!-- Dashboard table and graph -->
 				<ul class="nav nav-pills nav-stacked">
-					<li><a href="index.php">Dashboard</a></li>
+					<li><a href="index.php">Home</a></li>
 					<li><a href="tabel.php">Tabel</a></li>
-					<li class="active"><a href="#">Grafik</a></li>
+					<li class="active"><a href="grafik.php">Grafik</a></li>
 				</ul><br>
 			</div>
 		</div>
@@ -69,99 +63,74 @@ $tanggal = mysqli_query($conn, "SELECT tanggal FROM tbl_log WHERE id_log>='$id_a
 			<div class="content">
 				<div class="col-lg-12">
 					<div class="card" style="height: 700px;" align="center">
-						<h3> GRAFIK DAYA PLTS TEKNIK ELEKTRO<br>UIN SUSKA RIAU </h3>
-						<div class="chart">
-						</div>
+						<h3> Grafik Sensor</h3>
+						<div id="chart"></div>
 					</div>
 				</div>
-				<!-- end of content -->
 			</div>
-			<!-- end of content wrapper -->
+			<!-- end of content -->
 		</div>
+		<!-- end of content wrapper -->
+	</div>
 	</div>
 	<!-- end of page wrapper with sidebar -->
 	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 	<!-- <script src="assets/js/grafik.js"></script> -->
 	<script>
 		var options = {
-			series: [{
-					name: "Tegangan V",
-					data: [
-						<?php
-						while ($data_tegangan_p = mysqli_fetch_array($tegangan_p)) {
-							echo '"' . $data_tegangan_p['tegangan_p'] . '",';
-						}
-						?>
-					],
-				},
-				{
-					name: "Arus A",
-					data: [
-						<?php
-						while ($data_arus_p = mysqli_fetch_array($arus_p)) {
-							echo '"' . $data_arus_p['arus_p'] . '",';
-						}
-						?>
-					],
-				},
-				{
-					name: "Daya W",
-					data: [
-						<?php
-						while ($data_daya_p = mysqli_fetch_array($daya_p)) {
-							echo '"' . $data_daya_p['daya_p'] . '",';
-						}
-						?>
-					],
-				}
-			],
 			chart: {
-				type: "bar",
-				height: 500,
+				type: 'line',
+				height: 350
 			},
-			plotOptions: {
-				bar: {
-					horizontal: false,
-					columnWidth: "55%",
-					endingShape: "rounded",
-				},
-			},
-			dataLabels: {
-				enabled: false,
-			},
-			stroke: {
-				show: true,
-				width: 2,
-				colors: ["transparent"],
-			},
+			series: [{
+				name: 'Temperature',
+				data: []
+			}, {
+				name: 'Humidity',
+				data: []
+			}, {
+				name: 'Kebisingan',
+				data: []
+			}],
 			xaxis: {
-				categories: [
-					<?php
-					while ($data_tanggal = mysqli_fetch_array($tanggal)) {
-						echo '"' . $data_tanggal['tanggal'] . '",';
-					}
-					?>
-				],
+				categories: []
 			},
 			yaxis: {
 				title: {
-					text: "",
-				},
-			},
-			fill: {
-				opacity: 1,
-			},
-			tooltip: {
-				y: {
-					formatter: function(val) {
-						return val;
-					},
-				},
-			},
-		};
-		var chart = new ApexCharts(document.querySelector(".chart"), options);
+					text: 'Nilai Sensor'
+				}
+			}
+		}
+
+		// Mengolah data yang diperoleh dari database
+		var categories = [];
+		var Temperature = [];
+		var Humidity = [];
+		var Kebisingan = [];
+
+		<?php foreach ($data as $row) : ?>
+			categories.push("<?php echo $row['timestamp']; ?>");
+			Temperature.push(parseFloat("<?php echo $row['data_temperature']; ?>"));
+			Humidity.push(parseFloat("<?php echo $row['data_humidity']; ?>"));
+			Kebisingan.push(parseFloat("<?php echo $row['data_humidity']; ?>"));
+		<?php endforeach; ?>
+
+		// Mengubah format timestamp
+		categories = categories.map(function(timestamp) {
+			var date = new Date(timestamp);
+			return date.getHours() + ":" + date.getMinutes();
+		});
+
+		// Memasukkan data ke dalam grafik
+		options.series[0].data = Temperature;
+		options.series[1].data = Humidity;
+		options.series[2].data = Kebisingan;
+		options.xaxis.categories = categories;
+
+		var chart = new ApexCharts(document.querySelector("#chart"), options);
 		chart.render();
 	</script>
+
 </body>
 
 </html>

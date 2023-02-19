@@ -2,6 +2,7 @@
 require 'koneksi/konek.php';
 $app = new Intai;
 $data = $app->read_data();
+$num_results = $app->count_data();
 $last_data = null;
 if ($data) {
     $last_data = $data[0];
@@ -137,7 +138,7 @@ if ($data) {
                                 <tr>
                                     <td>Terakhir Diupdate</td>
                                     <td>:</td>
-                                    <td><?php echo $last_update; ?> </td>
+                                    <td><?php echo $last_data['timestamp']; ?> </td>
                                 </tr>
 
                             </table>

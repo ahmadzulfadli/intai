@@ -55,6 +55,31 @@ class Intai
         }
     }
 
+    function garfik_data()
+    {
+        $sql_query = "SELECT * FROM tbl_dht11";
+        $result = $this->connection->query($sql_query);
+
+        if ($result->num_rows > 0) {
+            $data = array();
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    function count_data()
+    {
+        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $result = $this->connection->query($sql_query);
+        $amount_data = $result->num_rows;
+        return $amount_data;
+    }
+
     function create_data($temp, $humid)
     {
         $sql_query = "INSERT INTO tbl_dht11 (data_temperature, data_humidity) VALUES ('" . $temp . "','" . $humid . "')";
