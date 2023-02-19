@@ -80,9 +80,9 @@ class Intai
         return $amount_data;
     }
 
-    function create_data($temp, $humid)
+    function create_data($temp, $humid, $suara)
     {
-        $sql_query = "INSERT INTO tbl_dht11 (data_temperature, data_humidity) VALUES ('" . $temp . "','" . $humid . "')";
+        $sql_query = "INSERT INTO tbl_dht11 (data_temperature, data_humidity, data_kebisingan) VALUES ('" . $temp . "','" . $humid . "','" . $suara . "')";
         echo $this->execute_query($sql_query);
     }
 
