@@ -39,7 +39,7 @@ class Content
 					<td>' . $row['timestamp'] . '</td>
 					<td>' . $row['data_temperature'] . '</td>
 					<td>' . $row['data_humidity'] . '</td>
-					<td>' . $row['data_humidity'] . '</td>
+					<td>' . $row['data_kebisingan'] . '</td>
 				</tr>';
 
 				$i++;

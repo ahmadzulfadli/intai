@@ -4,7 +4,7 @@
 // Network ID
 const char *ssid = "MyASUS";
 const char *password = "hy12345678";
-const char *host = "192.168.108.240";
+const char *host = "192.168.25.240";
 const int port = 80;
 
 // Current time
@@ -50,7 +50,7 @@ void loop()
     float sound = random(50, 100);
 
     // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
-    String apiUrl = "http://monitoringdht11.com/kirim_data.php?";
+    String apiUrl = "http://monitoringdht11.com/crud/kirim_data.php?";
     apiUrl += "mode=save";
     apiUrl += "&temperature=" + String(temp);
     apiUrl += "&humidity=" + String(humid);
@@ -80,5 +80,5 @@ void loop()
         String line = client.readStringUntil('\r');
         Serial.println(line);
     }
-    delay(30000);
+    delay(60000);
 }

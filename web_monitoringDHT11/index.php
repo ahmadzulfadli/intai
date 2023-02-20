@@ -212,7 +212,7 @@ if ($data) {
 
             var defs3 = {
                 label: "dB",
-                value: <?php echo $last_data['data_humidity']; ?>,
+                value: <?php echo $last_data['data_kebisingan']; ?>,
                 min: 0,
                 max: 100,
                 decimals: 2,

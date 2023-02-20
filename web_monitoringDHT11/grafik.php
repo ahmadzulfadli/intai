@@ -111,7 +111,7 @@ $data = $app->garfik_data();
 			categories.push("<?php echo $row['timestamp']; ?>");
 			Temperature.push(parseFloat("<?php echo $row['data_temperature']; ?>"));
 			Humidity.push(parseFloat("<?php echo $row['data_humidity']; ?>"));
-			Kebisingan.push(parseFloat("<?php echo $row['data_humidity']; ?>"));
+			Kebisingan.push(parseFloat("<?php echo $row['data_kebisingan']; ?>"));
 		<?php endforeach; ?>
 
 		// Mengubah format timestamp
