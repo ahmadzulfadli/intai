@@ -7,6 +7,7 @@ $last_data = null;
 if ($data) {
     $last_data = $data[0];
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -86,7 +87,30 @@ if ($data) {
                                         <tr>
                                             <td>Elang</td>
                                             <td>0°28'35"N 101°20'57"E.</td>
-                                            <td>Aman</td>
+                                            <td><?php
+                                                $suara = $last_data['data_kebisingan'];
+                                                class Status
+                                                {
+                                                    private $suara;
+
+                                                    function __construct($suara)
+                                                    {
+                                                        $this->suara = $suara;
+                                                    }
+
+                                                    public function status()
+                                                    {
+                                                        if ($this->suara > 50) {
+                                                            echo '<div class="alert alert-danger">Terdeteksi Penebangan</div>';
+                                                        } else {
+                                                            echo '<div class="alert alert-primary">Aman</div>';
+                                                        }
+                                                    }
+                                                }
+
+                                                $status = new Status($suara);
+                                                $status->status();
+                                                ?></td>
                                         </tr>
                                     </tbody>
                                 </table>

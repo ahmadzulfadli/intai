@@ -57,16 +57,19 @@ class Intai
 
     function garfik_data()
     {
-        $sql_query = "SELECT * FROM tbl_dht11";
+        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
         $result = $this->connection->query($sql_query);
 
         if ($result->num_rows > 0) {
             $data = array();
+            $i = 0;
             while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
+                $i++;
+                if ($i == 15) break;
             }
 
-            return $data;
+            return array_reverse($data);
         } else {
             return false;
         }
