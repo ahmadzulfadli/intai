@@ -62,8 +62,7 @@ $data = $app->garfik_data();
 			<!-- content -->
 			<div class="content">
 				<div class="col-lg-12">
-					<div class="card" style="height: 700px;" align="center">
-						<h3> Grafik Sensor</h3>
+					<div class="card">
 						<div id="chart"></div>
 					</div>
 				</div>
@@ -78,9 +77,21 @@ $data = $app->garfik_data();
 	<script>
 		var options = {
 			chart: {
-				type: 'line',
-				height: 350
+				type: 'area',
+				height: 500,
+				toolbar: {
+					show: true,
+					tools: {
+						download: true,
+						selection: true,
+						zoom: true,
+						zoomin: true,
+						zoomout: true,
+						pan: true
+					}
+				}
 			},
+			colors: ['#ff0000', '#00ff00', '#0000ff'],
 			series: [{
 				name: 'Temperature',
 				data: []
@@ -98,10 +109,40 @@ $data = $app->garfik_data();
 				title: {
 					text: 'Nilai Sensor'
 				}
+			},
+			legend: {
+				position: 'top',
+				horizontalAlign: 'left'
+			},
+			dataLabels: {
+				enabled: false
+			},
+			markers: {
+				size: 1,
+				hover: {
+					size: 2
+				}
+			},
+			tooltip: {
+				shared: true
+			},
+			animation: {
+				easing: 'easeinout',
+				speed: 3000
+			},
+			title: {
+				text: 'Grafik Sensor',
+				align: 'center',
+				margin: 20,
+				style: {
+					fontSize: '24px',
+					fontWeight: 'bold',
+					fontFamily: 'Helvetica, Arial, sans-serif',
+					color: '#333'
+				}
 			}
-		}
+		};
 
-		// Mengolah data yang diperoleh dari database
 		var categories = [];
 		var Temperature = [];
 		var Humidity = [];
@@ -114,13 +155,6 @@ $data = $app->garfik_data();
 			Kebisingan.push(parseFloat("<?php echo $row['data_kebisingan']; ?>"));
 		<?php endforeach; ?>
 
-		// Mengubah format timestamp
-		categories = categories.map(function(timestamp) {
-			var date = new Date(timestamp);
-			return date.getHours() + ":" + date.getMinutes();
-		});
-
-		// Memasukkan data ke dalam grafik
 		options.series[0].data = Temperature;
 		options.series[1].data = Humidity;
 		options.series[2].data = Kebisingan;
