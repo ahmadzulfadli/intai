@@ -1,11 +1,18 @@
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Adafruit_Sensor.h>
+#include "DHT.h"
 
 // Network ID
 const char *ssid = "MyASUS";
 const char *password = "hy12345678";
-const char *host = "192.168.25.240";
+const char *host = "192.168.207.240";
 const int port = 80;
+
+// Deklarasi DHT
+#define DHTPIN 12
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
 
 // Current time
 unsigned long currentTime = millis();
@@ -18,6 +25,7 @@ void setup()
 {
     // NodeMCU Utility
     Serial.begin(9600);
+    dht.begin();
 
     // Networking
     Serial.print("Connecting to ");
@@ -45,8 +53,8 @@ void loop()
     }
 
     // DHT get temp dan humid
-    float temp = random(50, 100);
-    float humid = random(50, 100);
+    float temp = dht.readTemperature();
+    float humid = dht.readHumidity();
     float sound = random(50, 100);
 
     // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
