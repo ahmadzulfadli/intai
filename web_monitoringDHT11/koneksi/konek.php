@@ -55,18 +55,38 @@ class Intai
         }
     }
 
+    function table_data($search)
+    {
+        $sql_query = "SELECT * FROM tbl_dht11";
+        if (empty($search)) {
+            $sql_query .= " ORDER BY timestamp DESC LIMIT 10";
+        } else {
+            $sql_query .= " WHERE data_temperature LIKE '%$search%' OR data_humidity LIKE '%$search%' OR data_kebisingan LIKE '%$search%'";
+        }
+
+        $result = $this->connection->query($sql_query);
+        if ($result->num_rows > 0) {
+            $data = array();
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
     function garfik_data()
     {
-        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $sql_query = "SELECT * FROM tbl_dht11";
+        $sql_query .= " ORDER BY timestamp DESC LIMIT 15";
         $result = $this->connection->query($sql_query);
 
         if ($result->num_rows > 0) {
             $data = array();
-            $i = 0;
             while ($row = $result->fetch_assoc()) {
                 $data[] = $row;
-                $i++;
-                if ($i == 15) break;
             }
 
             return array_reverse($data);
@@ -89,19 +109,19 @@ class Intai
         echo $this->execute_query($sql_query);
     }
 
-    function update_data($id, $update_data = [])
-    {
-        $sql_query = "UPDATE tbl_dht11 SET " . $update_data['column'] . " = " . $update_data['value'] . " WHERE id = " . $id . "";
-        $this->execute_query($sql_query);
-    }
-
-    function delete_data($id)
-    {
-        $sql_query = "DELETE FROM tbl_dht11 WHERE id = " . $id . "";
-        echo $this->execute_query($sql_query);
-    }
-
     /**
+     *function update_data($id, $update_data = [])
+     *{
+     *   $sql_query = "UPDATE tbl_dht11 SET " . $update_data['column'] . " = " . $update_data['value'] . " WHERE id = " . $id . "";
+     *  $this->execute_query($sql_query);
+     *}
+
+     *function delete_data($id)
+     *{
+     *   $sql_query = "DELETE FROM tbl_dht11 WHERE id = " . $id . "";
+     *   echo $this->execute_query($sql_query);
+     *}
+
      * Connection Section
      * This section for RDBMS Operation Only
      * 

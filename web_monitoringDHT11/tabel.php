@@ -13,7 +13,7 @@ class Content
 	public function render_table()
 	{
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
-		$data = $this->app->read_data($search);
+		$data = $this->app->table_data($search);
 
 		if ($data) {
 			$num_results = $this->app->count_data();
@@ -55,13 +55,17 @@ class Content
 	{
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
 
-		echo '<form method="get" class="form-inline mb-3">
-			<div class="form-group mr-2">
+		echo '<div class="form-group mr-2">
 				<label for="search">Cari Data:</label>
 				<input type="text" class="form-control ml-2 mr-2" id="search" name="search" value="' . $search . '">
 			</div>
-			<button type="submit" class="btn btn-primary">Cari</button>
-		</form>';
+			<button type="submit" class="btn btn-primary">Cari</button>';
+	}
+	public function view_all()
+	{
+		$view = isset($_GET['view']) ? $_GET['view'] : '';
+
+		echo '<button type="submit" name="view" class="btn btn-primary value = "all">View All</button>';
 	}
 }
 
@@ -130,12 +134,15 @@ $content = new Content;
 							<center>
 								<h5 class="card-title">Data Suhu dan Kelembaban</h5>
 							</center>
-							<form class="form-inline float-right" method="get" action="">
+							<form class="form-inline float-right" method="get" action="tabel.php">
 								<?php $content->render_search_form() ?>
 							</form>
 							<table class="table table-striped">
 								<?php $content->render_table(); ?>
 							</table>
+							<form class="form-inline float-center" method="get" action="tabel.php">
+								<?php $content->view_all() ?>
+							</form>
 						</div>
 					</div>
 				</div>
