@@ -178,8 +178,10 @@ if ($data) {
                     <div class="col-lg-4">
                         <div class="card h-lg-250 overflow-y-lg-auto">
                             <!-- h-lg-250 = height = 25rem (250px) only on large screens and up (> 992px), overflow-y-lg-auto = overflow-y: auto only on large screens and up (> 992px) -->
-                            <h2 class="card-title">Restech</h2>
-                            ...
+                            <h2 class="card-title">Intai</h2>
+                            Intai merupakan alat pendeteksi penebang liar yang dikembangkan untuk menjaga hutan dari
+                            pelaku yang tidak bertanggung jawab. Alat ini menggunakan
+                            sensor suara MAX4466, mikrokontroler ESP32 untuk mengidentifikasi suara gergaji mesin.
                         </div>
                     </div>
                 </div>

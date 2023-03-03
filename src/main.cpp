@@ -15,18 +15,6 @@ const int port = 80;
 #define dio0 2
 int counter = 0;
 
-/* void onReceive(int packetSize)
-{
-    // received a packet
-    Serial.println("Received packet '");
-
-    // read packet
-    for (int i = 0; i < packetSize; i++)
-    {
-        Serial.print((char)LoRa.read());
-    }
-} */
-
 void setup()
 {
     // NodeMCU Utility

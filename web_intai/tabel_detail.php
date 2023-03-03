@@ -31,12 +31,19 @@ class Content
 							<th>Sensor 2</th>
 							<th>Sensor 3</th>
 							<th>Sensor 4</th>
+							<th>Satatus</th>
 						</tr>
 					</thead>
 					<tbody>';
 
             $i = 1;
             foreach ($data as $row) {
+                $statusdb = $row['data_status'];
+                if ($statusdb < 1) {
+                    $status = "Aman";
+                } else {
+                    $status = "Bahaya";
+                }
                 echo '<tr>
 					<td>' . $i . '</td>
 					<td>' . $row['timestamp'] . '</td>
@@ -44,10 +51,12 @@ class Content
 					<td>' . $row['data_dbmax2'] . '</td>
 					<td>' . $row['data_dbmax3'] . '</td>
 					<td>' . $row['data_dbmax4'] . '</td>
+					<td>' . $status . '</td>
 				</tr>';
 
                 $i++;
             }
+
 
             echo '</tbody></table></div>';
         } else {
