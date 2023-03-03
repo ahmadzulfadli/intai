@@ -1,31 +1,51 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <Adafruit_Sensor.h>
-#include "DHT.h"
+#include <SPI.h>
+#include <LoRa.h>
 
 // Network ID
-const char *ssid = "MyASUS";
-const char *password = "hy12345678";
-const char *host = "192.168.207.240";
+const char *ssid = "Raden Mas Wifi";
+const char *password = "bebaspakai";
+const char *host = "172.16.142.147";
 const int port = 80;
 
-// Deklarasi DHT
-#define DHTPIN 12
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
+// lora
+#define ss 5
+#define rst 14
+#define dio0 2
+int counter = 0;
 
-// Current time
-unsigned long currentTime = millis();
-// Previous time
-unsigned long previousTime = 0;
-// Define timeout time in milliseconds (example: 2000ms = 2s)
-const long timeoutTime = 2000;
+/* void onReceive(int packetSize)
+{
+    // received a packet
+    Serial.println("Received packet '");
+
+    // read packet
+    for (int i = 0; i < packetSize; i++)
+    {
+        Serial.print((char)LoRa.read());
+    }
+} */
 
 void setup()
 {
     // NodeMCU Utility
-    Serial.begin(9600);
-    dht.begin();
+    Serial.begin(115200);
+
+    // Lora
+    while (!Serial)
+        ;
+    Serial.println("LoRa Receiver");
+    LoRa.setPins(ss, rst, dio0);
+    if (!LoRa.begin(433E6))
+    {
+        Serial.println("Starting LoRa failed!");
+        delay(100);
+        while (1)
+            ;
+    }
+    LoRa.setSyncWord(0x12); // set sync word
+    Serial.println("LoRa Receiver Ready!");
 
     // Networking
     Serial.print("Connecting to ");
@@ -52,41 +72,57 @@ void loop()
         return;
     }
 
-    // DHT get temp dan humid
-    float temp = dht.readTemperature();
-    float humid = dht.readHumidity();
-    float sound = random(50, 100);
-
-    // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
-    String apiUrl = "http://monitoringdht11.com/crud/kirim_data.php?";
-    apiUrl += "mode=save";
-    apiUrl += "&temperature=" + String(temp);
-    apiUrl += "&humidity=" + String(humid);
-    apiUrl += "&kebisingan=" + String(sound);
-
-    // Set header Request
-    client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-
-    // Pastikan tidak berlarut-larut
-    unsigned long timeout = millis();
-    while (client.available() == 0)
+    // try to parse packet
+    int packetSize = LoRa.parsePacket();
+    if (packetSize)
     {
-        if (millis() - timeout > 3000)
+        // received a packet
+        Serial.print("Received packet '");
+
+        // read packet
+        while (LoRa.available())
         {
-            Serial.println(">>> Client Timeout !");
-            Serial.println(">>> Operation failed !");
-            client.stop();
-            return;
+            String LoRaData = LoRa.readString();
+            Serial.print(LoRaData);
+
+            //===============================================================
+            // collect data for 50 mS
+
+            // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
+            String apiUrl = "http://intai.com/crud/kirim_data.php?";
+            apiUrl += "mode=save";
+            apiUrl += String(LoRaData);
+
+            // Set header Request
+            client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
+                         "Host: " + host + "\r\n" +
+                         "Connection: close\r\n\r\n");
+
+            // Pastikan tidak berlarut-larut
+            unsigned long timeout = millis();
+            while (client.available() == 0)
+            {
+                if (millis() - timeout > 3000)
+                {
+                    Serial.println(">>> Client Timeout !");
+                    Serial.println(">>> Operation failed !");
+                    client.stop();
+                    return;
+                }
+            }
+
+            // Baca hasil balasan dari PHP
+            while (client.available())
+            {
+                String line = client.readStringUntil('\r');
+                Serial.println(line);
+            }
         }
+
+        // print RSSI of packet
+        Serial.print("' with RSSI ");
+        Serial.println(LoRa.packetRssi());
     }
 
-    // Baca hasil balasan dari PHP
-    while (client.available())
-    {
-        String line = client.readStringUntil('\r');
-        Serial.println(line);
-    }
-    delay(60000);
+    //===============================================================
 }

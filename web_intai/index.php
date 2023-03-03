@@ -88,7 +88,7 @@ if ($data) {
                                             <td>Elang</td>
                                             <td>0°28'35"N 101°20'57"E.</td>
                                             <td><?php
-                                                $suara = $last_data['data_kebisingan'];
+                                                $suara = $last_data['data_status'];
                                                 class Status
                                                 {
                                                     private $suara;
@@ -100,7 +100,7 @@ if ($data) {
 
                                                     public function status()
                                                     {
-                                                        if ($this->suara > 50) {
+                                                        if ($this->suara == 1) {
                                                             echo '<div class="alert alert-danger">Terdeteksi Penebangan</div>';
                                                         } else {
                                                             echo '<div class="alert alert-primary">Aman</div>';
@@ -122,24 +122,31 @@ if ($data) {
                     </div>
                     <!-- First row (equally spaced) -->
                     <div class="row row-eq-spacing">
-                        <div class="col-6 col-xl-4 data">
+                        <div class="col-6 col-xl-3 data">
                             <div class="card">
-                                <h2 class="card-title">Temperature</h2>
+                                <h2 class="card-title">Sensor 1</h2>
                                 <div id="jg1" class="gauge size-2"></div>
                                 <div class="h-split"></div>
                             </div>
                         </div>
-                        <div class="col-6 col-xl-4 data">
+                        <div class="col-6 col-xl-3 data">
                             <div class="card">
-                                <h2 class="card-title">Humidity</h2>
+                                <h2 class="card-title">Sensor 2</h2>
                                 <div id="jg2" class="gauge size-2"></div>
                                 <div class="h-split"></div>
                             </div>
                         </div>
-                        <div class="col-6 col-xl-4 data">
+                        <div class="col-6 col-xl-3 data">
                             <div class="card">
-                                <h2 class="card-title">Kebisingan</h2>
+                                <h2 class="card-title">Sensor 3</h2>
                                 <div id="jg3" class="gauge size-2"></div>
+                                <div class="h-split"></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3 data">
+                            <div class="card">
+                                <h2 class="card-title">Sensor 4</h2>
+                                <div id="jg4" class="gauge size-2"></div>
                                 <div class="h-split"></div>
                             </div>
                         </div>
@@ -201,8 +208,8 @@ if ($data) {
             var jg1, jg2, jg3
 
             var defs1 = {
-                label: "°C",
-                value: <?php echo $last_data['data_temperature']; ?>,
+                label: "dB",
+                value: <?php echo $last_data['data_dbmax1']; ?>,
                 min: 0,
                 max: 100,
                 decimals: 2,
@@ -218,8 +225,8 @@ if ($data) {
             }
 
             var defs2 = {
-                label: "RH",
-                value: <?php echo $last_data['data_humidity']; ?>,
+                label: "dB",
+                value: <?php echo $last_data['data_dbmax2']; ?>,
                 min: 0,
                 max: 100,
                 decimals: 2,
@@ -236,7 +243,24 @@ if ($data) {
 
             var defs3 = {
                 label: "dB",
-                value: <?php echo $last_data['data_kebisingan']; ?>,
+                value: <?php echo $last_data['data_dbmax3']; ?>,
+                min: 0,
+                max: 100,
+                decimals: 2,
+                gaugeWidthScale: 0.6,
+                pointer: true,
+                pointerOptions: {
+                    toplength: 10,
+                    bottomlength: 10,
+                    bottomwidth: 2
+                },
+                counter: true,
+                relativeGaugeSize: true,
+            }
+
+            var defs4 = {
+                label: "dB",
+                value: <?php echo $last_data['data_dbmax4']; ?>,
                 min: 0,
                 max: 100,
                 decimals: 2,
@@ -264,6 +288,11 @@ if ($data) {
             jg3 = new JustGage({
                 id: "jg3",
                 defaults: defs3
+            });
+
+            jg4 = new JustGage({
+                id: "jg4",
+                defaults: defs4
             });
         });
     </script>

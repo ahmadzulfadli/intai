@@ -34,13 +34,13 @@ class Intai
      */
     function read_json()
     {
-        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $sql_query = "SELECT * FROM data_intai ORDER BY timestamp DESC";
         echo $this->execute_query($sql_query, [], true);
     }
 
     function read_data()
     {
-        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $sql_query = "SELECT * FROM data_intai ORDER BY timestamp DESC";
         $result = $this->connection->query($sql_query);
 
         if ($result->num_rows > 0) {
@@ -57,11 +57,32 @@ class Intai
 
     function table_data($search)
     {
-        $sql_query = "SELECT * FROM tbl_dht11";
+        $sql_query = "SELECT * FROM data_intai";
         if (empty($search)) {
             $sql_query .= " ORDER BY timestamp DESC LIMIT 10";
         } else {
-            $sql_query .= " WHERE data_temperature LIKE '%$search%' OR data_humidity LIKE '%$search%' OR data_kebisingan LIKE '%$search%'";
+            $sql_query .= " WHERE data_dbmax1 LIKE '%$search%' OR data_dbmax2 LIKE '%$search%' OR data_dbmax3 LIKE '%$search%'OR data_dbmax4 LIKE '%$search%'";
+        }
+
+        $result = $this->connection->query($sql_query);
+        if ($result->num_rows > 0) {
+            $data = array();
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            return $data;
+        } else {
+            return false;
+        }
+    }
+    function table_data_detail($search)
+    {
+        $sql_query = "SELECT * FROM data_intai";
+        if (empty($search)) {
+            $sql_query .= " ORDER BY timestamp DESC";
+        } else {
+            $sql_query .= " WHERE data_dbmax1 LIKE '%$search%' OR data_dbmax2 LIKE '%$search%' OR data_dbmax3 LIKE '%$search%'OR data_dbmax4 LIKE '%$search%'";
         }
 
         $result = $this->connection->query($sql_query);
@@ -79,7 +100,7 @@ class Intai
 
     function garfik_data()
     {
-        $sql_query = "SELECT * FROM tbl_dht11";
+        $sql_query = "SELECT * FROM data_intai";
         $sql_query .= " ORDER BY timestamp DESC LIMIT 15";
         $result = $this->connection->query($sql_query);
 
@@ -97,28 +118,28 @@ class Intai
 
     function count_data()
     {
-        $sql_query = "SELECT * FROM tbl_dht11 ORDER BY timestamp DESC";
+        $sql_query = "SELECT * FROM data_intai ORDER BY timestamp DESC";
         $result = $this->connection->query($sql_query);
         $amount_data = $result->num_rows;
         return $amount_data;
     }
 
-    function create_data($temp, $humid, $suara)
+    function create_data($suara1, $suara2, $suara3, $suara4, $status)
     {
-        $sql_query = "INSERT INTO tbl_dht11 (data_temperature, data_humidity, data_kebisingan) VALUES ('" . $temp . "','" . $humid . "','" . $suara . "')";
+        $sql_query = "INSERT INTO data_intai (data_dbmax1, data_dbmax2, data_dbmax3, data_dbmax4, data_status) VALUES ('" . $suara1 . "','" . $suara2 . "','" . $suara3 . "','" . $suara4 . "','" . $status . "')";
         echo $this->execute_query($sql_query);
     }
 
     /**
      *function update_data($id, $update_data = [])
      *{
-     *   $sql_query = "UPDATE tbl_dht11 SET " . $update_data['column'] . " = " . $update_data['value'] . " WHERE id = " . $id . "";
+     *   $sql_query = "UPDATE data_intai SET " . $update_data['column'] . " = " . $update_data['value'] . " WHERE id = " . $id . "";
      *  $this->execute_query($sql_query);
      *}
 
      *function delete_data($id)
      *{
-     *   $sql_query = "DELETE FROM tbl_dht11 WHERE id = " . $id . "";
+     *   $sql_query = "DELETE FROM data_intai WHERE id = " . $id . "";
      *   echo $this->execute_query($sql_query);
      *}
 

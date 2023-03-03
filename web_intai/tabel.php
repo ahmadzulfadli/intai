@@ -15,6 +15,8 @@ class Content
 		$search = isset($_GET['search']) ? $_GET['search'] : '';
 		$data = $this->app->table_data($search);
 
+
+
 		if ($data) {
 			$num_results = $this->app->count_data();
 			$last_data = $data[0];
@@ -25,9 +27,10 @@ class Content
 						<tr>
 							<th>No</th>
 							<th>Waktu</th>
-							<th>Temperature</th>
-							<th>Humidity</th>
-							<th>Kebisingan</th>
+							<th>Sensor 1</th>
+							<th>Sensor 2</th>
+							<th>Sensor 3</th>
+							<th>Sensor 4</th>
 						</tr>
 					</thead>
 					<tbody>';
@@ -37,9 +40,10 @@ class Content
 				echo '<tr>
 					<td>' . $i . '</td>
 					<td>' . $row['timestamp'] . '</td>
-					<td>' . $row['data_temperature'] . '</td>
-					<td>' . $row['data_humidity'] . '</td>
-					<td>' . $row['data_kebisingan'] . '</td>
+					<td>' . $row['data_dbmax1'] . '</td>
+					<td>' . $row['data_dbmax2'] . '</td>
+					<td>' . $row['data_dbmax3'] . '</td>
+					<td>' . $row['data_dbmax4'] . '</td>
 				</tr>';
 
 				$i++;
@@ -60,12 +64,6 @@ class Content
 				<input type="text" class="form-control ml-2 mr-2" id="search" name="search" value="' . $search . '">
 			</div>
 			<button type="submit" class="btn btn-primary">Cari</button>';
-	}
-	public function view_all()
-	{
-		$view = isset($_GET['view']) ? $_GET['view'] : '';
-
-		echo '<button type="submit" name="view" class="btn btn-primary value = "all">View All</button>';
 	}
 }
 
@@ -132,7 +130,7 @@ $content = new Content;
 					<div class="card">
 						<div class="card-body">
 							<center>
-								<h5 class="card-title">Data Suhu dan Kelembaban</h5>
+								<h5 class="card-title">Data Sensor Suara</h5>
 							</center>
 							<form class="form-inline float-right" method="get" action="tabel.php">
 								<?php $content->render_search_form() ?>
@@ -140,9 +138,7 @@ $content = new Content;
 							<table class="table table-striped">
 								<?php $content->render_table(); ?>
 							</table>
-							<form class="form-inline float-center" method="get" action="tabel.php">
-								<?php $content->view_all() ?>
-							</form>
+							<a href="tabel_detail.php"><button type="button" class="btn btn-primary">Lihat Semua</button></a>
 						</div>
 					</div>
 				</div>

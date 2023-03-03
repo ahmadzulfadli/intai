@@ -93,13 +93,16 @@ $data = $app->garfik_data();
 			},
 			colors: ['#ff0000', '#00ff00', '#0000ff'],
 			series: [{
-				name: 'Temperature',
+				name: 'Sensor_1',
 				data: []
 			}, {
-				name: 'Humidity',
+				name: 'Sensor_2',
 				data: []
 			}, {
-				name: 'Kebisingan',
+				name: 'Sensor_3',
+				data: []
+			}, {
+				name: 'Sensor_4',
 				data: []
 			}],
 			xaxis: {
@@ -144,20 +147,23 @@ $data = $app->garfik_data();
 		};
 
 		var categories = [];
-		var Temperature = [];
-		var Humidity = [];
-		var Kebisingan = [];
+		var Sensor_1 = [];
+		var Sensor_2 = [];
+		var Sensor_3 = [];
+		var Sensor_4 = [];
 
 		<?php foreach ($data as $row) : ?>
 			categories.push("<?php echo $row['timestamp']; ?>");
-			Temperature.push(parseFloat("<?php echo $row['data_temperature']; ?>"));
-			Humidity.push(parseFloat("<?php echo $row['data_humidity']; ?>"));
-			Kebisingan.push(parseFloat("<?php echo $row['data_kebisingan']; ?>"));
+			Sensor_1.push(parseFloat("<?php echo $row['data_dbmax1']; ?>"));
+			Sensor_2.push(parseFloat("<?php echo $row['data_dbmax2']; ?>"));
+			Sensor_3.push(parseFloat("<?php echo $row['data_dbmax3']; ?>"));
+			Sensor_4.push(parseFloat("<?php echo $row['data_dbmax4']; ?>"));
 		<?php endforeach; ?>
 
-		options.series[0].data = Temperature;
-		options.series[1].data = Humidity;
-		options.series[2].data = Kebisingan;
+		options.series[0].data = Sensor_1;
+		options.series[1].data = Sensor_2;
+		options.series[2].data = Sensor_3;
+		options.series[3].data = Sensor_4;
 		options.xaxis.categories = categories;
 
 		var chart = new ApexCharts(document.querySelector("#chart"), options);
