@@ -1,0 +1,45 @@
+Sensor
+Kelas ini akan merepresentasikan sensor suara yang digunakan dalam program. 
+Kelas ini akan memiliki variabel dan fungsi berikut:
+
+    Variabel:
+        pin: pin analog yang digunakan untuk membaca data dari sensor
+
+    Fungsi:
+        read(): membaca data dari sensor suara dan mengembalikan hasilnya
+
+Led
+Kelas ini akan merepresentasikan LED yang digunakan dalam program. 
+Kelas ini akan memiliki variabel dan fungsi berikut:
+
+    Variabel:
+        pin: pin digital yang digunakan untuk mengontrol LED
+
+    Fungsi:
+        on(): menyalakan LED
+        off(): mematikan LED
+
+LoRaTransmitter
+Kelas ini akan merepresentasikan modul LoRa yang digunakan dalam program. 
+Kelas ini akan memiliki variabel dan fungsi berikut:
+
+    Variabel:
+        ssPin: pin SS yang digunakan untuk mengontrol transceiver
+        rstPin: pin RST yang digunakan untuk mengontrol transceiver
+        dio0Pin: pin DIO0 yang digunakan untuk membaca sinyal dari transceiver
+
+    Fungsi:
+        begin(): memulai modul LoRa
+        send(message): mengirim pesan menggunakan modul LoRa
+
+SDCard
+Kelas ini akan merepresentasikan SD Card yang digunakan dalam program. 
+Kelas ini akan memiliki variabel dan fungsi berikut:
+
+    Variabel:
+        chipSelectPin: pin yang digunakan untuk mengontrol SD Card
+
+    Fungsi:
+        begin(): memulai SD Card
+        open(file): membuka file untuk ditulis
+        write(data): menulis data ke dalam file
