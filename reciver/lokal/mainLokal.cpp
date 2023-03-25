@@ -6,9 +6,9 @@
 #include <UrlEncode.h>
 
 // Network ID
-const char *ssid = "MyASUS";
-const char *password = "hy12345678";
-const char *host = "192.168.143.240";
+const char *ssid = "Raden Mas Wifi";
+const char *password = "bebaspakai";
+const char *host = "172.16.142.151";
 const int port = 80;
 
 /* // WhatsApp
@@ -88,7 +88,7 @@ void loop()
             LoRa.readBytes((byte *)&status, sizeof(status));
             LoRa.readBytes((byte *)&countData, sizeof(countData));
 
-            /* Serial.println("========================================");
+            Serial.println("========================================");
             Serial.print(db1);
             Serial.print(" ");
             Serial.print(db2);
@@ -100,12 +100,12 @@ void loop()
             Serial.print(status);
             Serial.print(" ");
             Serial.println(countData);
-            Serial.println("========================================"); */
+            Serial.println("========================================");
 
             //===============================================================
             // collect data for 50 mS
 
-            // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
+            /* // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
             String apiUrl = "http://intai.com/crud/kirim_data.php?";
             apiUrl += "mode=save";
             apiUrl += "&suara1=" + String(db1);
@@ -137,7 +137,7 @@ void loop()
             {
                 String line = client.readStringUntil('\r');
                 Serial.println(line);
-            }
+            } */
         }
 
         // print RSSI of packet

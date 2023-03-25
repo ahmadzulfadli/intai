@@ -11,6 +11,9 @@
 #define SS 5
 #define RST 14
 #define DIO0 2
+#define LMOSI 23
+#define LMISO 19
+#define LSCK 18
 
 // Deklarasi pin max4466
 #define SENSOR_PIN1 34

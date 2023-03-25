@@ -1,4 +1,4 @@
-#include "config.h"
+#include <config.h>
 
 int countData = 1;
 
@@ -8,18 +8,15 @@ const int sampleTimesound = 10000;
 unsigned int sample1, sample2, sample3, sample4;
 
 // sd card
+SPIClass mySPI(VSPI);
 File dataFile;
 
-// set SPI
-SPIClass sdSPI(VSPI);
-SPIClass loraSPI(HSPI);
-
-void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah);
+void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status);
 
 void setup()
 {
     // NodeMCU Utility
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     pinMode(LED_TRANS, OUTPUT);
     pinMode(LED_READ_DATA, OUTPUT);
@@ -29,8 +26,6 @@ void setup()
         ;
     Serial.println("LoRa Sender");
     LoRa.setPins(SS, RST, DIO0);
-    loraSPI.begin(LSCK, LMISO, LMOSI, SS);
-    LoRa.setSPI(loraSPI);
     if (!LoRa.begin(433E6))
     {
         Serial.println("Starting LoRa failed!");
@@ -41,8 +36,8 @@ void setup()
     LoRa.setSyncWord(0x12); // set sync word
 
     // sd card
-    sdSPI.begin(SCK, MISO, MOSI, CHIP);
-    if (!SD.begin(CHIP, sdSPI))
+    mySPI.begin(SCK, MISO, MOSI, CHIP);
+    if (!SD.begin(CHIP, mySPI))
     {
         Serial.println("initialization memory failed. Things to check:");
         while (1)
@@ -210,7 +205,7 @@ void loop()
         Serial.println(i);
 
         // save sd card
-        database(i, db1, db2, db3, db4, status, arah);
+        database(i, db1, db2, db3, db4, status);
 
         digitalWrite(LED_READ_DATA, LOW);
         delay(1000);
@@ -233,7 +228,7 @@ void loop()
     digitalWrite(LED_TRANS, LOW);
 }
 
-void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah)
+void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status)
 {
     // create object JSON document
     StaticJsonDocument<200> doc;
@@ -245,7 +240,6 @@ void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status
     doc["data_dbmax3"] = dbmax3;
     doc["data_dbmax4"] = dbmax4;
     doc["data_status"] = status;
-    doc["data_arah"] = arah;
 
     // serialize the JSON document to a string
     String jsonStr;
