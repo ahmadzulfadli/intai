@@ -1,7 +1,6 @@
-#INTAI
-## Alat Pendeteksi Penebang Liar
+# INTAI
 
-Alat pendeteksi penebang liar ini dirancang untuk membantu dalam memantau dan melacak aktivitas penebangan liar di daerah-daerah yang rawan. Alat ini menggunakan modul sensor suara MAX4466, ESP32, dan LoRa SX1278 sebagai komponen utamanya. Berikut adalah deskripsi tentang masing-masing komponen:
+INTAI adalah alat pendeteksi penebang liar yang dirancang untuk membantu dalam memantau dan melacak aktivitas penebangan liar di daerah-daerah yang rawan. Alat ini menggunakan modul sensor suara MAX4466, ESP32, dan LoRa SX1278 sebagai komponen utamanya. Berikut adalah deskripsi tentang masing-masing komponen:
 
 ## Modul Sensor Suara MAX4466
 
