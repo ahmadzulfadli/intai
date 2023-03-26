@@ -32,18 +32,16 @@ class Content
 							<th>Sensor 3</th>
 							<th>Sensor 4</th>
 							<th>Satatus</th>
+							<th>Arah</th>
 						</tr>
 					</thead>
 					<tbody>';
 
             $i = 1;
             foreach ($data as $row) {
-                $statusdb = $row['data_status'];
-                if ($statusdb < 1) {
-                    $status = "Aman";
-                } else {
-                    $status = "Bahaya";
-                }
+                $status = $this->app->get_status($row['status_id']);
+                $arah = $this->app->get_arah($row['arah_id']);
+
                 echo '<tr>
 					<td>' . $i . '</td>
 					<td>' . $row['timestamp'] . '</td>
@@ -52,6 +50,7 @@ class Content
 					<td>' . $row['data_dbmax3'] . '</td>
 					<td>' . $row['data_dbmax4'] . '</td>
 					<td>' . $status . '</td>
+					<td>' . $arah . '</td>
 				</tr>';
 
                 $i++;

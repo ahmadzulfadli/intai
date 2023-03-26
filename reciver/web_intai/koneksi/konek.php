@@ -104,6 +104,22 @@ class Intai
         }
     }
 
+    function get_arah($arah_id)
+    {
+        $query = "SELECT nama FROM arah WHERE id = $arah_id";
+        $result = mysqli_query($this->connection, $query);
+        $row = mysqli_fetch_assoc($result);
+        return $row['nama'];
+    }
+
+    function get_status($status_id)
+    {
+        $query = "SELECT nama FROM status WHERE id = $status_id";
+        $result = mysqli_query($this->connection, $query);
+        $row = mysqli_fetch_assoc($result);
+        return $row['nama'];
+    }
+
     function garfik_data()
     {
         $sql_query = "SELECT * FROM data_intai";

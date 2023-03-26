@@ -88,7 +88,7 @@ if ($data) {
                                             <td>Elang</td>
                                             <td>0°28'35"N 101°20'57"E.</td>
                                             <td><?php
-                                                $suara = $last_data['data_status'];
+                                                $suara = $last_data['status_id'];
                                                 class Status
                                                 {
                                                     private $suara;
@@ -100,7 +100,7 @@ if ($data) {
 
                                                     public function status()
                                                     {
-                                                        if ($this->suara == 1) {
+                                                        if ($this->suara == 2) {
                                                             echo '<div class="alert alert-danger">Terdeteksi Penebangan</div>';
                                                         } else {
                                                             echo '<div class="alert alert-primary">Aman</div>';
