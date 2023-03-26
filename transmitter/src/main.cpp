@@ -3,8 +3,8 @@
 int countData = 1;
 
 // variabel millis
-const int timeSound = 1000;
-const int sampleTimesound = 10000;
+const int timeSound = 2000;
+const int sampleTimesound = 60000;
 unsigned int sample1, sample2, sample3, sample4;
 
 // sd card
@@ -160,10 +160,13 @@ void loop()
         peakToPeak4 = signalMax4 - signalMin4;         // max - min = peak-peak amplitude
         db4 = map(peakToPeak4, 0, 4095, mindb, maxdb); // calibrate for deciBels
 
+        // kalkulasi nilai kebisingan selama satu menit
         sum1 += db1;
         sum2 += db2;
         sum3 += db3;
         sum4 += db4;
+
+        // menentukan arah penebang liar dengan melihat nilai sensor tertinggi
         if (sum1 > sum2 && sum1 > sum3 && sum1 > sum4)
         {
             arah = 1;
@@ -195,8 +198,10 @@ void loop()
         else
         {
             status = 0;
-            // arah = 0;
+            arah = 0;
         }
+
+        // menampilkan ke serial monitor
         i++;
         Serial.print(db1);
         Serial.print(" ");
@@ -215,6 +220,26 @@ void loop()
         digitalWrite(LED_READ_DATA, LOW);
         delay(1000);
     }
+
+    // Nilai rata-rata tingkat kebisingan
+    sum1 /= 30;
+    sum2 /= 30;
+    sum3 /= 30;
+    sum4 /= 30;
+
+    Serial.println("====== Paket Send =======");
+    Serial.print(sum1);
+    Serial.print(" ");
+    Serial.print(sum2);
+    Serial.print(" ");
+    Serial.print(sum3);
+    Serial.print(" ");
+    Serial.println(sum4);
+    Serial.println(status);
+    Serial.println(arah);
+    Serial.println(countData);
+    Serial.println("====== End Paket =======");
+
     // send packet
     LoRa.beginPacket();
     LoRa.write((byte *)&db1, sizeof(db1));
