@@ -32,6 +32,12 @@ class Intai
      * This section for CRUD Operation
      * Create - Read - Update - Delete
      */
+    function create_data($suara1, $suara2, $suara3, $suara4, $status, $arah)
+    {
+        $sql_query = "INSERT INTO data_intai (data_dbmax1, data_dbmax2, data_dbmax3, data_dbmax4, status_id, arah_id) VALUES ('" . $suara1 . "','" . $suara2 . "','" . $suara3 . "','" . $suara4 . "','" . $status . "','" . $arah . "')";
+        echo $this->execute_query($sql_query);
+    }
+
     function read_json()
     {
         $sql_query = "SELECT * FROM data_intai ORDER BY timestamp DESC";
@@ -124,11 +130,7 @@ class Intai
         return $amount_data;
     }
 
-    function create_data($suara1, $suara2, $suara3, $suara4, $status)
-    {
-        $sql_query = "INSERT INTO data_intai (data_dbmax1, data_dbmax2, data_dbmax3, data_dbmax4, data_status) VALUES ('" . $suara1 . "','" . $suara2 . "','" . $suara3 . "','" . $suara4 . "','" . $status . "')";
-        echo $this->execute_query($sql_query);
-    }
+
 
 
     /* function update_data($id, $update_data = [])

@@ -19,13 +19,14 @@ if ($app->is_url_query('mode')) {
             $app->read_json();
 
         case 'save':
-            if ($app->is_url_query('suara1') && $app->is_url_query('suara2') && $app->is_url_query('suara3') && $app->is_url_query('suara4') && $app->is_url_query('status')) {
+            if ($app->is_url_query('suara1') && $app->is_url_query('suara2') && $app->is_url_query('suara3') && $app->is_url_query('suara4') && $app->is_url_query('status') && $app->is_url_query('arah')) {
                 $suara1 = $app->get_url_query_value('suara1');
                 $suara2 = $app->get_url_query_value('suara2');
                 $suara3 = $app->get_url_query_value('suara3');
                 $suara4 = $app->get_url_query_value('suara4');
                 $status = $app->get_url_query_value('status');
-                $app->create_data($suara1, $suara2, $suara3, $suara4, $status);
+                $arah = $app->get_url_query_value('arah');
+                $app->create_data($suara1, $suara2, $suara3, $suara4, $status, $arah);
             } else {
                 $error = [
                     'suara1' => 'required',
@@ -33,6 +34,7 @@ if ($app->is_url_query('mode')) {
                     'suara3' => 'required',
                     'suara4' => 'required',
                     'status' => 'required',
+                    'arah' => 'required',
                 ];
                 echo $app->error_handler($error);
             }
