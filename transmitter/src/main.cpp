@@ -1,9 +1,7 @@
 #include "config.h"
 
-int countData = 1;
-
 // variabel millis
-const int timeSound = 2000;
+const int timeSound = 1000;
 const int sampleTimesound = 60000;
 unsigned int sample1, sample2, sample3, sample4;
 
@@ -14,7 +12,13 @@ File dataFile;
 SPIClass sdSPI(VSPI);
 SPIClass loraSPI(HSPI);
 
-void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah);
+// lora
+const long BAND = 433E6;     // frekuensi operasi LoRa
+const int TX_POWER = 17;     // daya output LoRa
+const long BAUD_RATE = 9600; // kecepatan data LoRa
+const int BW = 125E3;        // bandwidth LoRa
+
+void database(int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah);
 
 void setup()
 {
@@ -31,14 +35,17 @@ void setup()
     LoRa.setPins(SS, RST, DIO0);
     loraSPI.begin(LSCK, LMISO, LMOSI, SS);
     LoRa.setSPI(loraSPI);
-    if (!LoRa.begin(433E6))
+    while (!LoRa.begin(BAND))
     {
-        Serial.println("Starting LoRa failed!");
-        delay(100);
-        while (1)
-            ;
+        Serial.println(".");
+        delay(500);
     }
-    LoRa.setSyncWord(0x12); // set sync word
+    LoRa.setTxPower(TX_POWER);
+    LoRa.setSpreadingFactor(12);
+    LoRa.setSignalBandwidth(BW);
+    LoRa.setCodingRate4(5);
+    LoRa.enableCrc();
+    Serial.println("LoRa Transmitter Ready!");
 
     // sd card
     sdSPI.begin(SCK, MISO, MOSI, CHIP);
@@ -151,8 +158,8 @@ void loop()
         peakToPeak1 = signalMax1 - signalMin1;         // max - min = peak-peak amplitude
         db1 = map(peakToPeak1, 0, 4095, mindb, maxdb); // calibrate for deciBels
 
-        peakToPeak2 = signalMax2 - signalMin2;      // max - min = peak-peak amplitude
-        db2 = map(peakToPeak2, 0, 4095, 20, maxdb); // calibrate for deciBels
+        peakToPeak2 = signalMax2 - signalMin2;         // max - min = peak-peak amplitude
+        db2 = map(peakToPeak2, 0, 4095, mindb, maxdb); // calibrate for deciBels
 
         peakToPeak3 = signalMax3 - signalMin3;         // max - min = peak-peak amplitude
         db3 = map(peakToPeak3, 0, 4095, mindb, maxdb); // calibrate for deciBels
@@ -169,19 +176,19 @@ void loop()
         // menentukan arah penebang liar dengan melihat nilai sensor tertinggi
         if (sum1 > sum2 && sum1 > sum3 && sum1 > sum4)
         {
-            arah = 1;
+            arah = 2;
         }
         else if (sum2 > sum1 && sum2 > sum3 && sum2 > sum4)
         {
-            arah = 2;
+            arah = 3;
         }
         else if (sum3 > sum1 && sum3 > sum2 && sum3 > sum4)
         {
-            arah = 3;
+            arah = 4;
         }
         else if (sum4 > sum1 && sum4 > sum2 && sum4 > sum3)
         {
-            arah = 4;
+            arah = 5;
         }
 
         // filter suara yang melebihi 90db
@@ -193,12 +200,12 @@ void loop()
         // jika freq 90db lebih dari 10 kali dali satu menit
         if (freq > 20)
         {
-            status = 1;
+            status = 2;
         }
         else
         {
-            status = 0;
-            arah = 0;
+            status = 1;
+            arah = 1;
         }
 
         // menampilkan ke serial monitor
@@ -210,12 +217,10 @@ void loop()
         Serial.print(db3);
         Serial.print(" ");
         Serial.println(db4);
-        Serial.println(status);
+        Serial.print(status);
+        Serial.print(" ");
         Serial.println(arah);
         Serial.println(i);
-
-        // save sd card
-        database(i, db1, db2, db3, db4, status, arah);
 
         digitalWrite(LED_READ_DATA, LOW);
         delay(1000);
@@ -227,38 +232,32 @@ void loop()
     sum3 /= 30;
     sum4 /= 30;
 
-    Serial.println("====== Paket Send =======");
-    Serial.print(sum1);
-    Serial.print(" ");
-    Serial.print(sum2);
-    Serial.print(" ");
-    Serial.print(sum3);
-    Serial.print(" ");
-    Serial.println(sum4);
-    Serial.println(status);
-    Serial.println(arah);
-    Serial.println(countData);
-    Serial.println("====== End Paket =======");
+    // save sd card
+    database(sum1, sum2, sum3, sum4, status, arah);
 
-    // send packet
+    // Lora data
+    String LoRaData = String(sum1);
+    LoRaData += "," + String(sum2);
+    LoRaData += "," + String(sum3);
+    LoRaData += "," + String(sum4);
+    LoRaData += "," + String(status);
+    LoRaData += "," + String(arah);
+
+    // send packet1
     LoRa.beginPacket();
-    LoRa.write((byte *)&db1, sizeof(db1));
-    LoRa.write((byte *)&db2, sizeof(db2));
-    LoRa.write((byte *)&db3, sizeof(db3));
-    LoRa.write((byte *)&db4, sizeof(db4));
-    LoRa.write((byte *)&status, sizeof(status));
-    LoRa.write((byte *)&arah, sizeof(arah));
-    LoRa.write((byte *)&countData, sizeof(countData));
+    LoRa.print(LoRaData);
     LoRa.endPacket();
 
-    countData++;
+    Serial.println("====== Paket Send =======");
+    Serial.print("Mengirim Data: " + LoRaData);
+    Serial.println("\n====== End Paket =======");
 
     digitalWrite(LED_TRANS, HIGH);
     delay(100);
     digitalWrite(LED_TRANS, LOW);
 }
 
-void database(int id, int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah)
+void database(int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int arah)
 {
     // create object JSON document
     StaticJsonDocument<200> doc;

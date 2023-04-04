@@ -2,13 +2,12 @@
 #include <WiFi.h>
 #include <SPI.h>
 #include <LoRa.h>
-#include <HTTPClient.h>
 #include <UrlEncode.h>
 
 // Network ID
-const char *ssid = "Raden Mas Wifi";
-const char *password = "bebaspakai";
-const char *host = "172.16.142.151";
+const char *ssid = "MyASUS";
+const char *password = "hy12345678";
+const char *host = "192.168.80.240";
 const int port = 80;
 
 /* // WhatsApp
@@ -21,7 +20,10 @@ String apiKey = "REPLACE_WITH_API_KEY"; */
 #define dio0 2
 int counter = 0;
 
-int db1, db2, db3, db4, status, arah, countData;
+const long BAND = 433E6;     // frekuensi operasi LoRa
+const int TX_POWER = 17;     // daya output LoRa
+const long BAUD_RATE = 9600; // kecepatan data LoRa
+const int BW = 125E3;        // bandwidth LoRa
 
 void setup()
 {
@@ -33,14 +35,16 @@ void setup()
         ;
     Serial.println("LoRa Receiver");
     LoRa.setPins(ss, rst, dio0);
-    if (!LoRa.begin(433E6))
+    while (!LoRa.begin(BAND))
     {
-        Serial.println("Starting LoRa failed!");
-        delay(100);
-        while (1)
-            ;
+        Serial.println(".");
+        delay(500);
     }
-    LoRa.setSyncWord(0x12); // set sync word
+    LoRa.setTxPower(TX_POWER);
+    LoRa.setSpreadingFactor(12);
+    LoRa.setSignalBandwidth(BW);
+    LoRa.setCodingRate4(5);
+    LoRa.enableCrc();
     Serial.println("LoRa Receiver Ready!");
 
     // Networking
@@ -60,6 +64,7 @@ void setup()
 
 void loop()
 {
+    // koneksi ke web client
     WiFiClient client;
 
     if (!client.connect(host, port))
@@ -68,85 +73,80 @@ void loop()
         return;
     }
 
-    // try to parse packet
+    // penerimaan lora
+    String receivedData = "";
+
     int packetSize = LoRa.parsePacket();
-    if (packetSize)
+    if (packetSize != 0)
     {
-        // received a packet
-        Serial.print("Received packet ");
+        Serial.print("Received packet '");
 
-        // read packet
-        while (LoRa.available() >= 2 * sizeof(int))
+        while (LoRa.available())
         {
-            /* String LoRaData = LoRa.readString();
-            Serial.print(LoRaData); */
-
-            LoRa.readBytes((byte *)&db1, sizeof(db1));
-            LoRa.readBytes((byte *)&db2, sizeof(db2));
-            LoRa.readBytes((byte *)&db3, sizeof(db3));
-            LoRa.readBytes((byte *)&db4, sizeof(db4));
-            LoRa.readBytes((byte *)&status, sizeof(status));
-            LoRa.readBytes((byte *)&arah, sizeof(arah));
-            LoRa.readBytes((byte *)&countData, sizeof(countData));
-
-            Serial.println("========================================");
-            Serial.print(db1);
-            Serial.print(" ");
-            Serial.print(db2);
-            Serial.print(" ");
-            Serial.print(db3);
-            Serial.print(" ");
-            Serial.print(db4);
-            Serial.print(" ");
-            Serial.print(status);
-            Serial.print(" ");
-            Serial.print(arah);
-            Serial.print(" ");
-            Serial.println(countData);
-            Serial.println("========================================");
-
-            //===============================================================
-            // collect data for 50 mS
-
-            /* // nodemcuphp/index.php?mode=save&temperature=${temp}&humidity=${humid}
-            String apiUrl = "http://intai.com/crud/kirim_data.php?";
-            apiUrl += "mode=save";
-            apiUrl += "&suara1=" + String(db1);
-            apiUrl += "&suara2=" + String(db2);
-            apiUrl += "&suara3=" + String(db3);
-            apiUrl += "&suara4=" + String(db4);
-            apiUrl += "&status=" + String(status);
-
-            // Set header Request
-            client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
-                         "Host: " + host + "\r\n" +
-                         "Connection: close\r\n\r\n");
-
-            // Pastikan tidak berlarut-larut
-            unsigned long timeout = millis();
-            while (client.available() == 0)
-            {
-                if (millis() - timeout > 3000)
-                {
-                    Serial.println(">>> Client Timeout !");
-                    Serial.println(">>> Operation failed !");
-                    client.stop();
-                    return;
-                }
-            }
-
-            // Baca hasil balasan dari PHP
-            while (client.available())
-            {
-                String line = client.readStringUntil('\r');
-                Serial.println(line);
-            } */
+            receivedData += (char)LoRa.read();
         }
 
-        // print RSSI of packet
+        Serial.println(receivedData);
+
+        char stringData[receivedData.length() + 1];
+        strcpy(stringData, receivedData.c_str());
+
+        char *ptr = strtok(stringData, ",");
+        int i = 0;
+        String data[6];
+
+        while (ptr != NULL)
+        {
+            data[i] = String(ptr);
+            i++;
+            ptr = strtok(NULL, ",");
+        }
+
+        String db1 = data[0];
+        String db2 = data[1];
+        String db3 = data[2];
+        String db4 = data[3];
+        String status = data[4];
+        String arah = data[5];
+
         Serial.print("' with RSSI ");
         Serial.println(LoRa.packetRssi());
-    }
 
-    //===============================================================
+        //===============================================================
+
+        // pengiriman nilai sensor ke web server
+        String apiUrl = "http://intai.com/crud/kirim_data.php?";
+        apiUrl += "mode=save";
+        apiUrl += "&suara1=" + db1;
+        apiUrl += "&suara2=" + db2;
+        apiUrl += "&suara3=" + db3;
+        apiUrl += "&suara4=" + db4;
+        apiUrl += "&status=" + status;
+        apiUrl += "&arah=" + arah;
+
+        // Set header Request
+        client.print(String("GET ") + apiUrl + " HTTP/1.1\r\n" +
+                     "Host: " + host + "\r\n" +
+                     "Connection: close\r\n\r\n");
+
+        // Pastikan tidak berlarut-larut
+        unsigned long timeout = millis();
+        while (client.available() == 0)
+        {
+            if (millis() - timeout > 3000)
+            {
+                Serial.println(">>> Client Timeout !");
+                Serial.println(">>> Operation failed !");
+                client.stop();
+                return;
+            }
+        }
+
+        // Baca hasil balasan dari PHP
+        while (client.available())
+        {
+            String line = client.readStringUntil('\r');
+            Serial.println(line);
+        }
+    }
 }
