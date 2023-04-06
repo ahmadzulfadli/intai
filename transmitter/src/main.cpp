@@ -1,7 +1,7 @@
 #include "config.h"
 
 // variabel millis
-const int timeSound = 1000;
+const int timeSound = 2000;
 const int sampleTimesound = 60000;
 unsigned int sample1, sample2, sample3, sample4;
 
@@ -23,7 +23,10 @@ void database(int dbmax1, int dbmax2, int dbmax3, int dbmax4, int status, int ar
 void setup()
 {
     // NodeMCU Utility
-    Serial.begin(115200);
+    Serial.begin(9600);
+
+    WiFi.disconnect(true);       // Mematikan WiFi
+    esp_bt_controller_disable(); // Mematikan Bluetooth
 
     pinMode(LED_TRANS, OUTPUT);
     pinMode(LED_READ_DATA, OUTPUT);
@@ -75,7 +78,7 @@ void loop()
     unsigned long startMillis = millis(); // Start of sample window
 
     unsigned int freq = 0;
-    int db1, db2, db3, db4, status, i, sum1, sum2, sum3, sum4, arah;
+    unsigned long db1, db2, db3, db4, status, i, sum1, sum2, sum3, sum4, arah;
 
     i = sum1 = sum2 = sum3 = sum4 = arah = 0;
 
@@ -152,8 +155,8 @@ void loop()
             }
         }
 
-        int mindb = 30;
-        int maxdb = 140;
+        int mindb = 35;
+        int maxdb = 110;
 
         peakToPeak1 = signalMax1 - signalMin1;         // max - min = peak-peak amplitude
         db1 = map(peakToPeak1, 0, 4095, mindb, maxdb); // calibrate for deciBels
@@ -167,17 +170,16 @@ void loop()
         peakToPeak4 = signalMax4 - signalMin4;         // max - min = peak-peak amplitude
         db4 = map(peakToPeak4, 0, 4095, mindb, maxdb); // calibrate for deciBels
 
-        // kalkulasi nilai kebisingan selama satu menit
-        sum1 += db1;
-        sum2 += db2;
-        sum3 += db3;
-        sum4 += db4;
-
         // filter suara yang melebihi 90db
         if (db1 > 70 or db2 > 70 or db3 > 70 or db4 > 70)
         {
             freq++;
+        }
 
+        // jika freq 70db lebih dari 10 kali dali satu menit
+        if (freq > 15)
+        {
+            status = 2;
             // menentukan arah penebang liar dengan melihat nilai sensor tertinggi
             if (sum1 > sum2 && sum1 > sum3 && sum1 > sum4)
             {
@@ -196,17 +198,17 @@ void loop()
                 arah = 5;
             }
         }
-
-        // jika freq 70db lebih dari 10 kali dali satu menit
-        if (freq > 15)
-        {
-            status = 2;
-        }
         else
         {
             status = 1;
             arah = 1;
         }
+
+        // kalkulasi nilai kebisingan selama satu menit
+        sum1 += db1;
+        sum2 += db2;
+        sum3 += db3;
+        sum4 += db4;
 
         // menampilkan ke serial monitor
         i++;
@@ -227,10 +229,10 @@ void loop()
     }
 
     // Nilai rata-rata tingkat kebisingan
-    sum1 /= 30;
-    sum2 /= 30;
-    sum3 /= 30;
-    sum4 /= 30;
+    sum1 /= 20;
+    sum2 /= 20;
+    sum3 /= 20;
+    sum4 /= 20;
 
     // save sd card
     database(sum1, sum2, sum3, sum4, status, arah);

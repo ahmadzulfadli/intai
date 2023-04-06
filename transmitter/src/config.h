@@ -7,6 +7,9 @@
 #include <SD.h>
 #include <ArduinoJson.h>
 
+#include "WiFi.h"
+#include "esp_bt.h"
+
 // lora
 #define SS 5
 #define RST 14
