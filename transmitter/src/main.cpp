@@ -153,7 +153,7 @@ void loop()
         }
 
         int mindb = 30;
-        int maxdb = 150;
+        int maxdb = 140;
 
         peakToPeak1 = signalMax1 - signalMin1;         // max - min = peak-peak amplitude
         db1 = map(peakToPeak1, 0, 4095, mindb, maxdb); // calibrate for deciBels
@@ -173,32 +173,32 @@ void loop()
         sum3 += db3;
         sum4 += db4;
 
-        // menentukan arah penebang liar dengan melihat nilai sensor tertinggi
-        if (sum1 > sum2 && sum1 > sum3 && sum1 > sum4)
-        {
-            arah = 2;
-        }
-        else if (sum2 > sum1 && sum2 > sum3 && sum2 > sum4)
-        {
-            arah = 3;
-        }
-        else if (sum3 > sum1 && sum3 > sum2 && sum3 > sum4)
-        {
-            arah = 4;
-        }
-        else if (sum4 > sum1 && sum4 > sum2 && sum4 > sum3)
-        {
-            arah = 5;
-        }
-
         // filter suara yang melebihi 90db
-        if (db1 > 90 or db2 > 90 or db3 > 90 or db4 > 90)
+        if (db1 > 70 or db2 > 70 or db3 > 70 or db4 > 70)
         {
             freq++;
+
+            // menentukan arah penebang liar dengan melihat nilai sensor tertinggi
+            if (sum1 > sum2 && sum1 > sum3 && sum1 > sum4)
+            {
+                arah = 2;
+            }
+            else if (sum2 > sum1 && sum2 > sum3 && sum2 > sum4)
+            {
+                arah = 3;
+            }
+            else if (sum3 > sum1 && sum3 > sum2 && sum3 > sum4)
+            {
+                arah = 4;
+            }
+            else if (sum4 > sum1 && sum4 > sum2 && sum4 > sum3)
+            {
+                arah = 5;
+            }
         }
 
-        // jika freq 90db lebih dari 10 kali dali satu menit
-        if (freq > 20)
+        // jika freq 70db lebih dari 10 kali dali satu menit
+        if (freq > 15)
         {
             status = 2;
         }
